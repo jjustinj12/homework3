@@ -34,7 +34,7 @@ cig.data <- cig.data %>%
          measure)
 
 final.data <- pivot_wider(cig.data, 
-                          id_cols = c("state","Year","measure"),
+                          id_cols = c("state","Year"),
                           names_from = "measure",
                           values_from = "value") %>%
   arrange(state, Year)
@@ -61,3 +61,4 @@ final.data <- final.data %>%
 write_tsv(final.data,"data/output/TaxBurden_Data.txt",append=FALSE,col_names=TRUE)
 write_rds(final.data,"data/output/TaxBurden_Data.rds")
 
+final.data

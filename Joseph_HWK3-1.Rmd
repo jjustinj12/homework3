@@ -1,0 +1,106 @@
+---
+title: "Joseph-J-hwk3-1"
+author: "Justin Joseph"
+date: "2023-03-11"
+header-includes:
+  - \usepackage{booktabs}
+output:
+  bookdown::pdf_document2: 
+  fig_caption: yes
+  toc: false
+---
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, stringr, readxl, data.table, 
+               gdata, MatchIt, cobalt, Matching)
+library(knitr)
+if (!requireNamespace("AER", quietly = TRUE)) {
+  install.packages("AER")}
+library(AER)
+
+```
+
+```{r, include=FALSE}
+load("Hwk3_workspace_1.Rdata")
+```
+
+
+### 1. A bar graph showing the proportion of states with a change in their cigarette tax in each year from 1970 to 1985.
+```{r, echo=FALSE}
+graph_1
+```
+
+
+
+### 2. Average tax on cigarettes and the average price of a pack of cigarettes from 1970 to 2018.
+```{r, echo=FALSE, fig.align='left'}
+figure2
+```
+\newpage
+
+### 3. Top 5 States with highest increases in cigarette prices. Plot the average number of packs sold per capita for those states from 1970 to 2018.
+```{r, echo=FALSE, fig.align='left'}
+table1
+```
+```{r, echo=FALSE, fig.align='left'}
+figure3
+```
+\newpage
+
+### 4. Top 5 States with lowest increases in cigarette prices. Plot the average number of packs sold per capita for those states from 1970 to 2018.
+```{r, echo=FALSE, fig.align='left'}
+table2
+```
+```{r, echo=FALSE, fig.align='left'}
+figure4
+```
+\newpage
+
+### 5. Compare Trends 
+For the states with the highest increase in cigarette prices they had a much higher decrease in the number of packs sold per captia where the highest number of packs sold per caption was approximately close to 140 in 1970 and decrease to a little less than 25 pack per captia. In comparison for the states with the smallest/lowest change in cigarette prices the change in number of packs sold was less pronounced. Specifically there was actually a small increase between 1970 and 1975 where the highest number of packs per captia was 150 in 1975 and decrease to a little more than 50 by 2018.  
+\newpage
+
+### 6. From 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period.
+```{r, echo=FALSE, fig.align='left'}
+model_1
+```
+For every 1% increase in cost per pack the sales per captia decrease by .17%. Thus demands decreases as there is an increase in costs per pack. 
+\newpage
+
+### 7. From 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period using the total (federal and state) cigarette tax (in dollars) as an instrument for log prices
+```{r, echo=FALSE}
+model_2
+```
+For every 1% increase in cost per pack the sales per captia decrease by .28%. Thus demands decreases as there is an increase in costs per pack. This is different from the first model because we are using total dollars as the instrument variable to complete the regression. the original estimate the predictor variable (cost per pack) can be correlated to other
+variables beyond sales per capita.Thus by using the IV tax dollar we are having a more accurate estimate because we are reducing endogeneity
+\newpage
+
+### 8. The first stage and reduced-form results from the instrument.
+
+```{r, echo=FALSE}
+first_step1 
+reduced_form1
+Twostage_equivalence1
+```
+\newpage
+
+### 9. 
+```{r, echo=FALSE}
+model_3
+```
+For every 1% increase in cost per pack the sales per captia decrease by .66%. Thus demands decreases as there is an increase in costs per pack. 
+
+```{r, echo=FALSE}
+model_4
+```
+Given using the instrument variable of tax dollars, For every 1% increase in cost per pack the sales per captia decrease by .76%. Thus demands decreases even more as there is an increase in costs per pack. 
+
+
+```{r, echo=FALSE}
+first_step2
+reduced_form2
+Twostage_equivalence2
+```
+
+### 10. Compare estimates between 1970-1990 versus 1991-2015
+The estimates of elasticity in the period of 1991-2015 compared to the earlier time period of 1970-1990 are much more pronounced and greater. The reason that sales of cigarettes have a greater effect by a change in price is because during this time their of may have been greater awareness of the risks smoking causes to one's health and thus people were more sensitive to increases in prices and made them buy less cigarettes in total. 

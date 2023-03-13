@@ -2,42 +2,27 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, stringr, readxl, data.table, gdata)
 
 #1
-Q1 <- final.data %>%
-  filter(Year >= 1970 & Year <= 1985) %>%
-  group_by(state) %>%
-  arrange(state, Year) %>%
-  mutate (sam=tax_dollar-lag(tax_dollar, default = first (tax_dollar))) %>%
-  group_by(Year) %>%
-  summarize(prop = sum(sam !=0)/ n_distinct(state))
 
 
-graph_1 <- ggplot(Q1, aes(x = Year, y = prop)) + 
-  geom_bar(stat = "identity", fill="blue") + 
-  labs(title = "Proportion of States with a Change in Cigarette Tax from 1970 to 1985", x = "Year", y = "Proportion of States with a Change") +
-  theme_minimal()
-graph_1
-
-
-
-
-Q1M<-final.data %>%
+final.data<-final.data %>%
   group_by(state) %>% 
   arrange(state, Year)%>%
   mutate (tax_change= tax_state-lag(tax_state),
-         tax_change_d=ifelse(tax_change==0,0,1),
-         price_cpi_2012=cost_per_pack*(229.5939/index),
-         total_tax_cpi_2012=tax_dollar*(229.5939/index),
-         ln_slaes=log(sales_per_capita),
-         ln_price_2012=log(price_cpi_2012))
+          tax_change_d=ifelse(tax_change==0,0,1),
+          price_cpi_2012=cost_per_pack*(229.5939/index),
+          total_tax_cpi_2012=tax_dollar*(229.5939/index),
+          ln_slaes=log(sales_per_capita),
+          ln_price_2012=log(price_cpi_2012))
 
-figure1<-Q1M %>%
+figure1<-final.data %>%
   group_by(Year)%>%
   filter(Year<1986, Year>1978)%>%
   summarise(mean_change=mean(tax_change_d))%>%
   ggplot(aes(x=as.factor(Year),y=mean_change))+ geom_bar(stat="identity") +
   labs(
     x="Year", 
-    y="Proportion of States") +theme_classic() +ylim(0,1)
+    y="Proportion of States", 
+    title = "Proportion of States with a change in their Cigarette Tax") +theme_update() +ylim(0,1)
 
 figure1
 #2 
@@ -47,16 +32,16 @@ final.data1<-final.data%>%
   filter(Year<=2018)
 avg_tax<- final.data1%>%
   group_by(Year)%>%
-  summarize(AvgTax=mean(tax_dollar, na.rm=TRUE))
+  summarize(AvgTax=mean(total_tax_cpi_2012, na.rm=TRUE))
 avg_costpack<-final.data1 %>%
   group_by(Year)%>%
-  summarize(AvgCostPerPack=mean(cost_per_pack, na.rm=TRUE))
+  summarize(AvgCostPerPack=mean(price_cpi_2012, na.rm=TRUE))
 avg_costpack
 merged_data <- merge(avg_tax, avg_costpack, by = "Year")
 merged_data
 figure2<-ggplot(data = merged_data, aes(x = Year)) +
-  geom_line(aes(y = AvgTax, color = "Average Tax")) +
-  geom_line(aes(y = AvgCostPerPack, color = "Average Price per Pack")) +
+  geom_line(aes(y = AvgTax, color = "Mean Tax")) +
+  geom_line(aes(y = AvgCostPerPack, color = "Mean Price")) +
   labs(title = "Average Tax and Price per Pack from 1980 to 2000",
        x = "Year",
        y = "Average Tax/Price",
@@ -68,10 +53,25 @@ figure2
 #3 
 top_states<-final.data%>%
   group_by(state)%>%
-  summarize(change_in_price=cost_per_pack[Year == 2018]-cost_per_pack[Year == 1970])%>%
+  summarize(change_in_price=price_cpi_2012[Year == 2018]-price_cpi_2012[Year == 1970])%>%
   arrange(desc(change_in_price)) %>%
   head(5)
 table1<-knitr::kable(top_states)
+table1
+
+figure31<-final.data%>%
+  filter(state %in% top_states$state) %>%
+  group_by(state)%>%
+  ggplot(aes(x=Year, y=sales_per_capita, group=state))+geom_line()+
+  labs(title = "Average Number of Packs Sold between 1970
+       with the highest increases in cigarette prices",
+       x = "Year",
+       y = "Number of Packs Sold Per Capita",
+       color = "Legend") +
+  theme_classic()
+
+figure31
+
 Q3 <- final.data %>%
   filter(state %in% top_states$state) %>%
   group_by(Year)%>%
@@ -139,10 +139,6 @@ summary(model_2)
 
 first_step1 <- lm(log(cost_per_pack) ~  log(tax_dollar), data=Q6)
 reduced_form1 <- lm(log(sales_per_capita)~log(tax_dollar), data=Q6)
-cost_hat <- predict(first_step1)
-Twostage_equivalence1 <- lm(log(sales_per_capita) ~ cost_hat, data=Q6)
-summary(Twostage_equivalence1)
-
 
 #9
 Q9<-final.data%>%
@@ -154,9 +150,7 @@ summary(model_4)
 
 first_step2 <- lm(log(cost_per_pack) ~  log(tax_dollar), data=Q9)
 reduced_form2 <- lm(log(sales_per_capita)~log(tax_dollar), data=Q9)
-cost_hat <- predict(first_step2)
-Twostage_equivalence2 <- lm(log(sales_per_capita) ~ cost_hat, data=Q9)
-summary(Twostage_equivalence2)
+
 
 
 save.image("Hwk3_workspace_1.Rdata")

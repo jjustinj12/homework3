@@ -59,52 +59,60 @@ top_states<-final.data%>%
 table1<-knitr::kable(top_states)
 table1
 
-figure31<-final.data%>%
+figure3<-final.data%>%
   filter(state %in% top_states$state) %>%
   group_by(state)%>%
-  ggplot(aes(x=Year, y=sales_per_capita, group=state))+geom_line()+
-  labs(title = "Average Number of Packs Sold between 1970
-       with the highest increases in cigarette prices",
+  ggplot(aes(x=Year, y=sales_per_capita, group=state, color=state))+geom_line()+
+  labs(title = "Average Number of Packs Sold between 1970-2018 for the states with the smallest increases in cigarette prices",
        x = "Year",
        y = "Number of Packs Sold Per Capita",
-       color = "Legend") +
-  theme_classic()
-
-figure31
-
-Q3 <- final.data %>%
-  filter(state %in% top_states$state) %>%
-  group_by(Year)%>%
-  summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
-figure3<-ggplot(data=Q3, aes(x = Year, y = avg_packs_sold)) + 
-  geom_line()+
-  labs(title = "Average number of packs for the 5 states with 
-  the HIGHEST increases in cigarette prices",
-       x = "Year",
-       y = "Average number of packs sold per capita ")+
-  ylim(0,200)
+       color = "Legend") + scale_color_discrete(name = "state")
 figure3
+
+# Q3 <- final.data %>%
+#   filter(state %in% top_states$state) %>%
+#   group_by(Year)%>%
+#   summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
+# figure3<-ggplot(data=Q3, aes(x = Year, y = avg_packs_sold)) + 
+#   geom_line()+
+#   labs(title = "Average number of packs for the 5 states with 
+#   the HIGHEST increases in cigarette prices",
+#        x = "Year",
+#        y = "Average number of packs sold per capita ")+
+#   ylim(0,200)
+# figure3
 
 #4
 bottom_states<-final.data%>%
   group_by(state)%>%
-  summarize(change_in_price=cost_per_pack[Year == 2018]-cost_per_pack[Year == 1970])%>%
+  summarize(change_in_price=price_cpi_2012[Year == 2018]-price_cpi_2012[Year == 1970])%>%
   arrange((change_in_price)) %>%
   head(5)
 table2<-knitr::kable(bottom_states)
 table2
-Q4 <- final.data %>%
+
+figure4<-final.data%>%
   filter(state %in% bottom_states$state) %>%
-  group_by(Year)%>%
-  summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
-figure4<-ggplot(data=Q4, aes(x = Year, y = avg_packs_sold)) + 
-  geom_line()+
-  labs(title = "Average number of packs for the 5 states with the 
-       Lowest increases in cigarette prices",
+  group_by(state)%>%
+  ggplot(aes(x=Year, y=sales_per_capita, group=state, color=state))+geom_line()+
+  labs(title = "Average Number of Packs Sold between 1970-2018 for the states with the smallest increases in cigarette prices",
        x = "Year",
-       y = "Average number of packs sold per capita ")+
-  ylim(0,200)
+       y = "Number of Packs Sold Per Capita",
+       color = "Legend") + scale_color_discrete(name = "state")
 figure4
+
+# Q4 <- final.data %>%
+#   filter(state %in% bottom_states$state) %>%
+#   group_by(Year)%>%
+#   summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
+# figure4<-ggplot(data=Q4, aes(x = Year, y = avg_packs_sold)) + 
+#   geom_line()+
+#   labs(title = "Average number of packs for the 5 states with the 
+#        Lowest increases in cigarette prices",
+#        x = "Year",
+#        y = "Average number of packs sold per capita ")+
+#   ylim(0,200)
+# figure4
 
 
 #5

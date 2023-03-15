@@ -17,6 +17,8 @@ library(knitr)
 if (!requireNamespace("AER", quietly = TRUE)) {
   install.packages("AER")}
 library(AER)
+library(fixest)
+library("modelsummary")
 
 ```
 
@@ -66,44 +68,43 @@ For the states with the highest increase in cigarette prices they had a much hig
 
 ### 6. From 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period.
 ```{r, echo=FALSE, fig.align='left'}
-model_1
+modelsummary(model_1)
 ```
-For every 1% increase in cost per pack the sales per captia decrease by .17%. Thus demands decreases as there is an increase in costs per pack. 
+For every 1% increase in cost per pack the sales per captia decrease by .809%. Thus demands decreases as there is an icnrease in costs per pack.
+
 \newpage
 
 ### 7. From 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period using the total (federal and state) cigarette tax (in dollars) as an instrument for log prices
 ```{r, echo=FALSE}
-model_2
+modelsummary(model_2)
 ```
-For every 1% increase in cost per pack the sales per captia decrease by .28%. Thus demands decreases as there is an increase in costs per pack. This is different from the first model because we are using total dollars as the instrument variable to complete the regression. the original estimate the predictor variable (cost per pack) can be correlated to other
+For every 1% increase in cost per pack the sales per captia decrease by .736%. Thus demands decreases as there is an increase in costs per pack. This is different from the first model because we are using total dollars as the instrument variable to complete the regression. the original estimate the predictor variable (cost per pack) can be correlated to other
 variables beyond sales per capita.Thus by using the IV tax dollar we are having a more accurate estimate because we are reducing endogeneity
 \newpage
 
 ### 8. The first stage and reduced-form results from the instrument.
 
 ```{r, echo=FALSE}
-# first_step1 
-# reduced_form1
-# Twostage_equivalence1
+modelsummary(first_step1)
+modelsummary(reduced_form1)
 ```
 \newpage
 
 ### 9. 
 ```{r, echo=FALSE}
-# model_3
+modelsummary(model_3)
 ```
-For every 1% increase in cost per pack the sales per captia decrease by .66%. Thus demands decreases as there is an increase in costs per pack. 
+For every 1% increase in cost per pack the sales per captia decrease by .997%. Thus demands decreases as there is an increase in costs per pack. 
 
 ```{r, echo=FALSE}
-# model_4
+modelsummary(model_4)
 ```
-Given using the instrument variable of tax dollars, For every 1% increase in cost per pack the sales per captia decrease by .76%. Thus demands decreases even more as there is an increase in costs per pack. 
+Given using the instrument variable of tax dollars, For every 1% increase in cost per pack the sales per captia decrease by 1.16%. Thus demands decreases even more as there is an increase in costs per pack. 
 
 
 ```{r, echo=FALSE}
-# first_step2
-# reduced_form2
-# Twostage_equivalence2
+modelsummary(first_step2)
+modelsummary(reduced_form2)
 ```
 
 ### 10. Compare estimates between 1970-1990 versus 1991-2015

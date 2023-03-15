@@ -1,6 +1,7 @@
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, stringr, readxl, data.table, gdata)
 
+
 #1
 
 
@@ -11,7 +12,7 @@ final.data<-final.data %>%
           tax_change_d=ifelse(tax_change==0,0,1),
           price_cpi_2012=cost_per_pack*(229.5939/index),
           total_tax_cpi_2012=tax_dollar*(229.5939/index),
-          ln_slaes=log(sales_per_capita),
+          ln_sales=log(sales_per_capita),
           ln_price_2012=log(price_cpi_2012))
 
 figure1<-final.data %>%
@@ -69,18 +70,7 @@ figure3<-final.data%>%
        color = "Legend") + scale_color_discrete(name = "state")
 figure3
 
-# Q3 <- final.data %>%
-#   filter(state %in% top_states$state) %>%
-#   group_by(Year)%>%
-#   summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
-# figure3<-ggplot(data=Q3, aes(x = Year, y = avg_packs_sold)) + 
-#   geom_line()+
-#   labs(title = "Average number of packs for the 5 states with 
-#   the HIGHEST increases in cigarette prices",
-#        x = "Year",
-#        y = "Average number of packs sold per capita ")+
-#   ylim(0,200)
-# figure3
+
 
 #4
 bottom_states<-final.data%>%
@@ -101,30 +91,46 @@ figure4<-final.data%>%
        color = "Legend") + scale_color_discrete(name = "state")
 figure4
 
-# Q4 <- final.data %>%
-#   filter(state %in% bottom_states$state) %>%
-#   group_by(Year)%>%
-#   summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
-# figure4<-ggplot(data=Q4, aes(x = Year, y = avg_packs_sold)) + 
-#   geom_line()+
-#   labs(title = "Average number of packs for the 5 states with the 
-#        Lowest increases in cigarette prices",
-#        x = "Year",
-#        y = "Average number of packs sold per capita ")+
-#   ylim(0,200)
-# figure4
+#
 
 
 #5
+
+Q3_5 <- final.data %>%
+  filter(state %in% top_states$state) %>%
+  group_by(Year)%>%
+  summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
+Q4_5 <- final.data %>%
+    filter(state %in% bottom_states$state) %>%
+    group_by(Year)%>%
+    summarize(avg_packs_sold=mean(sales_per_capita, na.rm=TRUE))
+combined_df <- bind_rows(
+  Q3 %>% mutate(group = "States with the Highest 
+increases in cigarette prices"),
+  Q4 %>% mutate(group = "States with the Lowest 
+increases in cigarette prices")
+  )
+
+figure5<-ggplot(combined_df, aes(x = Year, y = avg_packs_sold, color = group)) +
+  geom_line() +
+  labs(title = "Average number of packs sold per capita in Top and Bottom States",
+       x = "Year",
+       y = "Average number of packs sold per capita") +
+  theme_bw() + ylim(0,200)
+figure5
+
 #For the states with the highest increase in cigarette prices they had a much higher decrease in the number of packs sold per captia where the highest number of packs sold per caption was approximately close to 140 in 1970 and decrease to a little less than 25 pack per captia. In compairson for the states with the smallest/lowest change in cigarret prices the change in number of packs sold was less pronouced. Specifically there was actually a small increase between 1970 and 1975 where the highest number of packs per captia was 150 in 1975 and decrease to a little more than 50 by 2018.  
 
 #6
 Q6<-final.data%>%
   filter(Year >=1970 & Year <=1990)
-model_1 <- lm(log(sales_per_capita) ~ log(cost_per_pack), data = Q6)
+model_1 <- feols(ln_sales ~ ln_price_2012, data = Q6)
 summary(model_1)
 
-#For every 1% increase in cost per pack the sales per captia decrease by .17%. Thus demands decreases as there is an icnrease in costs per pack. 
+
+
+
+# For every 1% increase in cost per pack the sales per captia decrease by .809%. Thus demands decreases as there is an icnrease in costs per pack.
 
 
 #7 
@@ -133,11 +139,10 @@ if (!requireNamespace("AER", quietly = TRUE)) {
 library(AER)
 
 
-model_2<- ivreg(log(sales_per_capita) ~ log(cost_per_pack) | log(tax_dollar), data = Q6)
-
+model_2<- feols(ln_sales ~ 1 | ln_price_2012 ~ (total_tax_cpi_2012), data = Q6)
 summary(model_2)
 
-# For every 1% increase in cost per pack the sales per captia decrease by .28%. Thus demands decreases as there is an increase in costs per pack.
+# For every 1% increase in cost per pack the sales per captia decrease by .736%. Thus demands decreases as there is an increase in costs per pack.
 # This is different from the first model because we are using total dollars as the instrument variable to
 # complete the regression. the original estimate the predictor variable (cost per pack) can be correlated to other
 # variables beyond sales per capita.
@@ -145,19 +150,19 @@ summary(model_2)
 
 #8
 
-first_step1 <- lm(log(cost_per_pack) ~  log(tax_dollar), data=Q6)
-reduced_form1 <- lm(log(sales_per_capita)~log(tax_dollar), data=Q6)
+first_step1 <- feols(ln_price_2012 ~  (total_tax_cpi_2012), data=Q6)
+reduced_form1 <- feols(ln_sales~(total_tax_cpi_2012), data=Q6)
 
 #9
 Q9<-final.data%>%
   filter(Year >=1991 & Year <=2015)
-model_3 <- lm(log(sales_per_capita) ~ log(cost_per_pack), data = Q9)
-summary(model_3)
-model_4<- ivreg(log(sales_per_capita) ~ log(cost_per_pack) | log(tax_dollar), data = Q9)
-summary(model_4)
 
-first_step2 <- lm(log(cost_per_pack) ~  log(tax_dollar), data=Q9)
-reduced_form2 <- lm(log(sales_per_capita)~log(tax_dollar), data=Q9)
+model_3 <- feols(ln_sales ~ ln_price_2012, data = Q9)
+summary(model_3)
+model_4<- feols(ln_sales ~ 1 | ln_price_2012 ~ (total_tax_cpi_2012), data = Q9)
+summary(model_4)
+first_step2 <- feols(ln_price_2012 ~  (total_tax_cpi_2012), data=Q9)
+reduced_form2 <- feols(ln_sales~(total_tax_cpi_2012), data=Q9)
 
 
 

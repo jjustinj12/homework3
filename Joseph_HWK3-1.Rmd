@@ -13,7 +13,7 @@ output:
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, stringr, readxl, data.table, 
                gdata, MatchIt, cobalt, Matching)
-library(knitr)
+library("knitr")
 if (!requireNamespace("AER", quietly = TRUE)) {
   install.packages("AER")}
 library(AER)

@@ -164,7 +164,11 @@ summary(model_4)
 first_step2 <- feols(ln_price_2012 ~  (total_tax_cpi_2012), data=Q9)
 reduced_form2 <- feols(ln_sales~(total_tax_cpi_2012), data=Q9)
 
+justin<-modelsummary(list("OLS"=model_3, "IV"=model_4), title="Point Estimates for 1991-2015", 
+             coef_map=c('ln_price_2012'="Log Price",
+                        'fit_ln_price_2012'="Log Price"), 
+             gof_map=c("N"="nobs", "r.squared"),
+             output = "kableExtra")
 
-
-save.image("Hwk3_workspace_1.Rdata")
+save.image("Hwk3_workspace_2.Rdata")
 

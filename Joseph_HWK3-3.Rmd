@@ -1,7 +1,7 @@
 ---
-title: "Joseph-J-hwk3-1"
+title: "Joseph-J-hwk3-3"
 author: "Justin Joseph"
-date: "2023-03-11"
+date: "2023-03-15"
 header-includes:
   - \usepackage{booktabs}
 output: 
@@ -24,48 +24,56 @@ library("kableExtra")
 ```
 
 ```{r, include=FALSE}
-load("Hwk3_workspace_1.Rdata")
+load("Hwk3_workspace_3.Rdata")
 ```
 
 
 ### 1. A bar graph showing the proportion of states with a change in their cigarette tax in each year from 1970 to 1985. 
 
-\@ref(fig:figure1)
-
-
-
 ```{r figure1, echo=FALSE, fig.cap="Share of States with a Change in Cigarette Taxes by Year"}
 figure1
 ```
 
+\newpage
 
 
 ### 2. Average tax on cigarettes and the average price of a pack of cigarettes from 1970 to 2018.
-```{r, echo=FALSE, fig.align='left'}
+
+```{r figure2, echo=FALSE, fig.cap="Average Tax on Cigarettes (2012 dollars) and the Average Price of a pack of cigarettes from 1970 to 2018", fig.align='left'}
 figure2
 ```
 \newpage
 
 ### 3. Top 5 States with highest increases in cigarette prices. Plot the average number of packs sold per capita for those states from 1970 to 2018.
-```{r, echo=FALSE, fig.align='left'}
-table1
+  
+
+```{r, echo=FALSE,  fig.align='left'}
+knitr::kable(top_states, col.names = c("State", "Change in Price"), caption = "Top 5 states with highest change in Cigarette prices (2012 Dollars)", booktabs = TRUE) %>% kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
 ```
-```{r, echo=FALSE, fig.align='left'}
+
+
+```{r, echo=FALSE, fig.cap="The average number of packs sold per capita for the top 5 states with the highest increase in cigarette prices from 1970 to 2018", fig.align='left'}
 figure3
 ```
+
 \newpage
 
 ### 4. Top 5 States with lowest increases in cigarette prices. Plot the average number of packs sold per capita for those states from 1970 to 2018.
+
+
 ```{r, echo=FALSE, fig.align='left'}
-table2
+knitr::kable(bottom_states, col.names = c("State", "Change in Price"), caption = "Top 5 states with smallest change in Cigarette prices (2012 Dollars)", booktabs = TRUE) %>% kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
 ```
-```{r, echo=FALSE, fig.align='left'}
+
+
+```{r, echo=FALSE, fig.cap= "The average number of packs sold per capita for the top 5 states with the lowest increase in cigarette prices from 1970 to 2018", fig.align='left'}
 figure4
 ```
 \newpage
 
 ### 5. Compare Trends 
-```{r, echo=FALSE, fig.align='left'}
+
+```{r, echo=FALSE, fig.cap= "Compairson of average number of packs sold between the highest and lowest change in cigarette price states" , fig.align='left'}
 figure5
 ```
 
@@ -74,7 +82,10 @@ For the states with the highest increase in cigarette prices they had a much hig
 
 ### 6. From 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period.
 ```{r, echo=FALSE, fig.align='left'}
-modelsummary(model_1)
+modelsummary(model_1, coef_map=c('ln_price_2012'="Log Price"), 
+             title = "OLS point estimate From 1970 to 1990",
+             gof_map=list(list("raw"="nobs","clean"="N", "fmt"=0),
+                          list("raw"="r.squared", "clean"="R\\textsuperscript{2}", "fmt"=2))) %>% kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
 
 ```
 For every 1% increase in cost per pack the sales per captia decrease by .809%. Thus demands decreases as there is an icnrease in costs per pack.
@@ -83,7 +94,10 @@ For every 1% increase in cost per pack the sales per captia decrease by .809%. T
 
 ### 7. From 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period using the total (federal and state) cigarette tax (in dollars) as an instrument for log prices
 ```{r, echo=FALSE}
-modelsummary(model_2)
+modelsummary(model_2, coef_map=c('fit_ln_price_2012'="Log Price"), 
+             title = "IV point estimate From 1970 to 1990",
+             gof_map=list(list("raw"="nobs","clean"="N", "fmt"=0),
+                          list("raw"="r.squared", "clean"="R\\textsuperscript{2}", "fmt"=2))) %>% kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center") 
 ```
 For every 1% increase in cost per pack the sales per captia decrease by .736%. Thus demands decreases as there is an increase in costs per pack. This is different from the first model because we are using total dollars as the instrument variable to complete the regression. the original estimate the predictor variable (cost per pack) can be correlated to other
 variables beyond sales per capita.Thus by using the IV tax dollar we are having a more accurate estimate because we are reducing endogeneity
@@ -92,17 +106,29 @@ variables beyond sales per capita.Thus by using the IV tax dollar we are having 
 ### 8. The first stage and reduced-form results from the instrument.
 
 ```{r, echo=FALSE}
-modelsummary(first_step1)
-modelsummary(reduced_form1)
+
+modelsummary(list("First Step"=first_step1, "Reduced form"=reduced_form1), 
+             title="The first stage and reduced-form results from the Instrument from 1970 to 1990",
+             coef_map=c('total_tax_cpi_2012'="Total Tax"), 
+             gof_map=list(list("raw"="nobs","clean"="N", "fmt"=0),
+                          list("raw"="r.squared", "clean"="R\\textsuperscript{2}", "fmt"=2))) %>%
+  add_header_above(c(" "=1, "1970 - 1990"= 2))%>%
+  kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
 ```
 \newpage
 
 ### 9. 
 ```{r, echo=FALSE}
-modelsummary(model_3)%>%
+
+modelsummary(list("OLS"=model_3, "IV form"=model_4), 
+             title="Point Estimates from 1991 to 2015.",
+             coef_map=c('ln_price_2012'="Log Price",
+                        'fit_ln_price_2012'="Log Price"), 
+             gof_map=list(list("raw"="nobs","clean"="N", "fmt"=0),
+                          list("raw"="r.squared", "clean"="R\\textsuperscript{2}", "fmt"=2))) %>%
+  add_header_above(c(" "=1, "1991 - 2015"= 2))%>%
   kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
-modelsummary(model_4)%>%
-  kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
+
 ```
 ```
 
@@ -113,12 +139,15 @@ Given using the instrument variable of tax dollars, For every 1% increase in cos
 
 
 ```{r, echo=FALSE}
-
-modelsummary(first_step2) %>%
+modelsummary(list("First Step"=first_step2, "Reduced form"=reduced_form2), 
+             title="The first stage and reduced-form results from the Instrument from 1991 to 2015",
+             coef_map=c('total_tax_cpi_2012'="Total Tax"), 
+             gof_map=list(list("raw"="nobs","clean"="N", "fmt"=0),
+                          list("raw"="r.squared", "clean"="R\\textsuperscript{2}", "fmt"=2))) %>%
+  add_header_above(c(" "=1, "1991 - 2015"= 2))%>%
   kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
-modelsummary(reduced_form2) %>%
-  kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
-```
+```  
+\newpage
 
 ### 10. Compare estimates between 1970-1990 versus 1991-2015
 ```{r, echo=FALSE, }
@@ -127,7 +156,7 @@ modelsummary(list("OLS"=model_1, "IV"=model_2, "OLS"=model_3, "IV"=model_4),
              coef_map=c('ln_price_2012'="Log Price",
                         'fit_ln_price_2012'="Log Price"), 
              gof_map=list(list("raw"="nobs","clean"="N", "fmt"=0),
-                          list("raw"="r.squared", "clean"="R<sup>2</sup>", "fmt"=2))) %>%
+                          list("raw"="r.squared", "clean"="R\\textsuperscript{2}", "fmt"=2))) %>%
   add_header_above(c(" "=1, "1970 - 1990"= 2, "1991-2015"=2))%>%
   kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
 ```

@@ -130,7 +130,6 @@ modelsummary(list("OLS"=model_3, "IV form"=model_4),
   kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
 
 ```
-```
 
 
 For every 1% increase in cost per pack the sales per captia decrease by .997%. Thus demands decreases as there is an increase in costs per pack. 

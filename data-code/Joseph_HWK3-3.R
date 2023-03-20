@@ -24,7 +24,7 @@ final.data<-final.data %>%
 
 figure1<-final.data %>%
   group_by(Year)%>%
-  filter(Year<1986, Year>1978)%>%
+  filter(Year<1986, Year>1969)%>%
   summarise(mean_change=mean(tax_change_d))%>%
   ggplot(aes(x=as.factor(Year),y=mean_change))+ geom_bar(stat="identity") +
   labs(
@@ -69,6 +69,10 @@ top_states<-final.data%>%
   head(5)
 table1<-knitr::kable(top_states)
 table1
+
+knitr::kable(top_states, 
+             col.names = c("State", "Change in Price"), type="HTML", 
+             caption = "Top 5 states change in Cigarette prices (2012 Dollars)", booktabs = TRUE)
 
 figure3<-final.data%>%
   filter(state %in% top_states$state) %>%
@@ -126,7 +130,9 @@ figure5<-ggplot(combined_df, aes(x = Year, y = avg_packs_sold, color = group)) +
   labs(title = "Average number of packs sold per capita in Top and Bottom States",
        x = "Year",
        y = "Average number of packs sold per capita") +
-  theme_bw() + ylim(0,200)
+  theme_bw() + ylim(0,200) +  
+  scale_color_manual(values = c("blue", "darkgreen"))
+
 figure5
 
 #For the states with the highest increase in cigarette prices they had a much higher decrease in the number of packs sold per captia where the highest number of packs sold per caption was approximately close to 140 in 1970 and decrease to a little less than 25 pack per captia. In compairson for the states with the smallest/lowest change in cigarret prices the change in number of packs sold was less pronouced. Specifically there was actually a small increase between 1970 and 1975 where the highest number of packs per captia was 150 in 1975 and decrease to a little more than 50 by 2018.  

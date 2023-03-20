@@ -30,7 +30,7 @@ load("Hwk3_workspace_3.Rdata")
 
 ### 1. A bar graph showing the proportion of states with a change in their cigarette tax in each year from 1970 to 1985. 
 
-```{r figure1, echo=FALSE, fig.cap="Share of States with a Change in Cigarette Taxes by Year"}
+```{r figure1, warning=FALSE, echo=FALSE, fig.cap="Share of States with a Change in Cigarette Taxes by Year"}
 figure1
 ```
 
@@ -88,7 +88,7 @@ modelsummary(model_1, coef_map=c('ln_price_2012'="Log Price"),
                           list("raw"="r.squared", "clean"="R\\textsuperscript{2}", "fmt"=2))) %>% kable_styling(latex_options=c("hold_position"), full_width = TRUE, position="center")
 
 ```
-For every 1% increase in cost per pack the sales per captia decrease by .809%. Thus demands decreases as there is an icnrease in costs per pack.
+For every 1% increase in cost per pack the sales per captia decrease by .809%. Thus demands decreases as there is an increase in costs per pack.
 
 \newpage
 
